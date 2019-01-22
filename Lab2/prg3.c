@@ -12,8 +12,17 @@ int is_keyword(char* token) {
 }
 
 int is_operator(char token) {
-	char operators[6] = {'+', '-', '*', '/', '=', '%'};
-	int i, n = 6;
+	char operators[20] = {'+', '-', '*', '/', '=', '%', '.', '<', '>', '!', '&', '|', '?', ':'};
+	int i, n = sizeof(operators) / sizeof(char);
+	for(i = 0; i < n; i++)
+		if(token == operators[i])
+			return 1;
+	return 0;
+}
+
+int is_seperator(char token) {
+	char operators[20] = {',', ';', '(', ')', '{', '}', '[', ']'};
+	int i, n = sizeof(operators) / sizeof(char);
 	for(i = 0; i < n; i++)
 		if(token == operators[i])
 			return 1;
@@ -25,7 +34,7 @@ int is_identifier(char* token) {
 		return 0;
 	int i;
 	for(i = 1; token[i] != '\0'; i++)
-		if(!((token[i] >= 'a' && token[i] <= 'z') || (token[i] >= 'A' && token[i] <= 'Z') || (token[i] > '0' && token[i] < '9') || token[i] == '_'))
+		if(!((token[i] >= 'a' && token[i] <= 'z') || (token[i] >= 'A' && token[i] <= 'Z') || (token[i] >= '0' && token[i] <= '9') || token[i] == '_'))
 			return 0;
 	return 1;
 }
@@ -41,6 +50,9 @@ int main() {
 		// Checking for operator
 		if(strlen(token) == 1 && is_operator(token[0]))
 			printf("Operator ---> %s\n", token);
+		// Checking for seperator
+		if(strlen(token) == 1 && is_seperator(token[0]))
+			printf("Seperator ---> %s\n", token);
 		// Checking for keyword
 		else if(is_keyword(token))
 			printf("Keyword ---> %s\n", token);
@@ -48,9 +60,24 @@ int main() {
 			printf("Identifier ---> %s\n", token);
 		else {
 			int i = 0;
-			for(i = 0; token[i] != '\0'; i++)
-				if(is_operator(token[i]))
+			char con[100] = "";
+			for(i = 0; token[i] != '\0'; i++) {
+				if(token[i] >= '0' || token[i] <='9') {
+					char inter[2];
+					inter[0] = token[i];
+					strcat(con, inter);
+				}
+				if(is_operator(token[i])) {
+					printf("Constant ---> %s\n", con);
 					printf("Operator ---> %c\n", token[i]);
+					strcpy(con, "");
+				}
+				else if(is_seperator(token[i])) {
+					printf("Constant ---> %s\n", con);
+					printf("Seperator ---> %c\n", token[i]);
+					strcpy(con, "");
+				}
+			}
 		}
 		token = strtok(NULL, s);
 	}
